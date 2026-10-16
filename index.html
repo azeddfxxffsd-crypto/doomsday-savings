@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#111712">
+<meta name="description" content="متابعة تحويش Avengers: Doomsday">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icon-192.png" type="image/png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Avengers: Doomsday | Savings Mission</title>
+<style>
+  :root{color-scheme:dark;--bg:#080a0a;--panel:#141918;--panel2:#202723;--text:#f5f4ec;--muted:#b7c0b8;--green:#9be85d;--line:#3b4b3d;--accent:#d4e8b7;--doom:#527b3c;--red:#8f2929}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -8%,#304a2d 0%,#111712 34%,var(--bg) 72%);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;padding:24px 14px 40px;position:relative}
+  body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.12;background-image:linear-gradient(135deg,transparent 47%,#9be85d 48%,transparent 49%),linear-gradient(45deg,transparent 47%,#9be85d 48%,transparent 49%);background-size:44px 44px;mask-image:linear-gradient(to bottom,black,transparent 65%)}
+  main{max-width:520px;margin:0 auto;position:relative}
+  .hero{text-align:center;padding:18px 8px 24px}
+  .icon{font-size:42px;margin-bottom:8px;filter:drop-shadow(0 0 16px #8be34b55)}
+  h1{font-size:clamp(25px,6vw,34px);margin:0 0 8px;letter-spacing:-.5px;text-transform:uppercase;text-shadow:0 0 24px #86d94a44}
+  .subtitle{color:var(--muted);margin:0;line-height:1.8}
+  .card{background:linear-gradient(155deg,rgba(27,37,29,.97),rgba(15,20,18,.98));border:1px solid var(--line);border-radius:24px;padding:22px;margin-bottom:15px;box-shadow:0 16px 40px #0006;position:relative;overflow:hidden}
+  .card:before{content:"";position:absolute;top:0;right:0;left:0;height:3px;background:linear-gradient(90deg,transparent,var(--doom),var(--green),transparent);opacity:.9}
+
+  .label{font-size:14px;color:var(--muted)}
+  .balance-row{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
+  .balance{font-size:clamp(38px,10vw,52px);font-weight:800;letter-spacing:-1px;color:var(--green);line-height:1.25}
+  .goal{color:var(--muted);font-size:14px;white-space:nowrap;padding-bottom:7px}
+  .progress-track{height:12px;border-radius:99px;background:#30384d;overflow:hidden;margin:19px 0 10px}
+  .progress-fill{height:100%;width:8.125%;background:linear-gradient(90deg,#527b3c,#9be85d,#e0ffb8);border-radius:99px;transition:width .25s ease;box-shadow:0 0 12px #9be85d55}
+  .progress-info{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted)}
+  h2{font-size:18px;margin:0 0 14px}
+  .amounts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  button{font:inherit;cursor:pointer;border:1px solid #455744;border-radius:14px;padding:14px 12px;background:linear-gradient(145deg,#273429,#1a211b);color:var(--text);font-weight:750;transition:transform .12s ease,background .12s ease,border-color .12s ease}
+  button:active{transform:scale(.98)}
+  button.add:hover{background:#344a31;border-color:var(--green);box-shadow:0 0 16px #9be85d22}
+  button.undo{width:100%;margin-top:12px;background:transparent;color:var(--accent);border-color:#657c56}
+  button.undo:disabled{opacity:.35;cursor:not-allowed}
+  .summary{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .stat{background:#101712;border:1px solid var(--line);border-radius:16px;padding:14px}
+  .stat .value{font-size:22px;font-weight:800;margin-top:6px}
+  .remaining{color:var(--green)}
+  .history{display:flex;flex-direction:column;gap:8px;max-height:220px;overflow:auto}
+  .history-item{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:12px;background:#101712;color:var(--muted);font-size:14px}
+  .history-item strong{color:var(--green)}
+  .empty{color:var(--muted);font-size:14px;text-align:center;padding:10px}
+  .note{font-size:12px;color:var(--muted);line-height:1.8;text-align:center;margin:14px 6px 0}
+  .success{display:none;margin-top:15px;padding:13px;border-radius:14px;background:#163b2b;border:1px solid #2b8b5d;color:#b9ffd6;line-height:1.7}
+  .success.show{display:block}
+  @media(min-width:430px){.amounts{grid-template-columns:repeat(3,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<main>
+  <header class="hero">
+    <div class="icon" aria-hidden="true">🛡️</div>
+    <p style="font-size:12px;letter-spacing:4px;color:var(--green);font-weight:900;margin:0 0 8px">MARVEL • DOOMSDAY</p>
+    <h1>Avengers: Doomsday</h1>
+    <p class="subtitle">DOCTOR DOOM IS COMING<br>تحدّي الـ800 جنيه • طريقك لليلة الأبطال</p>
+  </header>
+
+  <section class="card" aria-live="polite">
+    <div class="balance-row">
+      <div>
+        <div class="label">رصيدك الحالي</div>
+        <div class="balance"><span id="balance">65</span> <span style="font-size:20px">جنيه</span></div>
+      </div>
+      <div class="goal">الهدف<br><strong style="color:var(--text);font-size:19px">800 ج</strong></div>
+    </div>
+    <div class="progress-track" role="progressbar" aria-label="نسبة تحقيق هدف الادخار" aria-valuemin="0" aria-valuemax="800" aria-valuenow="65" id="progressBar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-info"><span id="percent">8.1% من الهدف</span><span>متبقي <strong id="remaining">735</strong> جنيه</span></div>
+    <div class="success" id="success">🎉 وصلت لهدفك! كده جمعت 800 جنيه أو أكتر. خليك محتفظ بأي زيادة كاحتياطي.</div>
+  </section>
+
+  <section class="card">
+    <h2>💚 حوّشت كام؟ اختار المبلغ</h2>
+    <div class="amounts">
+      <button class="add" data-amount="5">＋ 5 جنيه</button>
+      <button class="add" data-amount="10">＋ 10 جنيه</button>
+      <button class="add" data-amount="15">＋ 15 جنيه</button>
+      <button class="add" data-amount="20">＋ 20 جنيه</button>
+      <button class="add" data-amount="25">＋ 25 جنيه</button>
+      <button class="add" data-amount="50">＋ 50 جنيه</button>
+      <button class="add" data-amount="100">＋ 100 جنيه</button>
+    </div>
+    <button class="undo" id="undo" disabled>↩ تراجع خطوة واحدة</button>
+<button class="undo" id="transfer">⇄ نقل رصيد من النسخة القديمة</button>
+    <p class="note">التراجع يلغي آخر إضافة فقط. رصيدك محفوظ على نفس المتصفح تلقائيًا.</p>
+  </section>
+
+  <section class="card">
+    <h2>🛡️ ملخص المهمة</h2>
+    <div class="summary">
+      <div class="stat"><div class="label">اللي جمعته</div><div class="value" id="savedStat">65 ج</div></div>
+      <div class="stat"><div class="label">المتبقي للهدف</div><div class="value remaining" id="remainingStat">735 ج</div></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>📜 سجل التحويش</h2>
+    <div class="history" id="history"><div class="empty">لسه مفيش إضافات — اختار أول مبلغ فوق.</div></div>
+  </section>
+  <p class="note">رصيد البداية 65 جنيه. الصفحة تحفظ التقدم على هذا الجهاز والمتصفح، وليست محفظة مالية حقيقية.</p>
+</main>
+<script>
+(() => {
+  const KEY = 'doomsday-savings-tracker-v1';
+  const initial = { balance: 65, history: [] };
+  let state = initial;
+  try {
+    const stored = localStorage.getItem(KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Number.isFinite(parsed.balance) && parsed.balance >= 0 && Array.isArray(parsed.history)) state = parsed;
+    }
+  } catch (_) {}
+
+  const $ = id => document.getElementById(id);
+  const money = n => Math.round(n).toLocaleString('en-US');
+  function persist() {
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (_) {}
+  }
+  function render() {
+    const balance = Math.max(0, state.balance);
+    const remaining = Math.max(0, 800 - balance);
+    const pct = Math.min(100, balance / 800 * 100);
+    $('balance').textContent = money(balance);
+    $('remaining').textContent = money(remaining);
+    $('percent').textContent = `${pct.toFixed(1)}% من الهدف`;
+    $('progressFill').style.width = `${pct}%`;
+    $('progressBar').setAttribute('aria-valuenow', String(Math.min(800, balance)));
+    $('savedStat').textContent = `${money(balance)} ج`;
+    $('remainingStat').textContent = `${money(remaining)} ج`;
+    $('undo').disabled = state.history.length === 0;
+    $('success').classList.toggle('show', balance >= 800);
+    const historyEl = $('history');
+    historyEl.replaceChildren();
+    if (!state.history.length) {
+      const empty = document.createElement('div');
+      empty.className = 'empty';
+      empty.textContent = 'لسه مفيش إضافات — اختار أول مبلغ فوق.';
+      historyEl.appendChild(empty);
+    } else {
+      state.history.slice().reverse().forEach((entry, idx) => {
+        const row = document.createElement('div');
+        row.className = 'history-item';
+        const label = document.createElement('span');
+        label.textContent = `إضافة ${state.history.length - idx}`;
+        const amount = document.createElement('strong');
+        amount.textContent = `+${money(entry.amount)} جنيه`;
+        row.append(label, amount);
+        historyEl.appendChild(row);
+      });
+    }
+  }
+  document.querySelectorAll('[data-amount]').forEach(button => {
+    button.addEventListener('click', () => {
+      const amount = Number(button.dataset.amount);
+      state.history.push({ amount, previousBalance: state.balance });
+      state.balance += amount;
+      persist(); render();
+    });
+  });
+  $('transfer').addEventListener('click', () => {
+    const current = prompt('افتح النسخة القديمة واكتب الرصيد الظاهر فيها بالجنيه. سيتم استبدال رصيد هذه النسخة بهذا الرقم:', String(state.balance));
+    if (current === null) return;
+    const value = Number(current.trim());
+    if (!Number.isFinite(value) || value < 0 || current.trim() === '') {
+      alert('اكتب رقمًا صحيحًا للرصيد.');
+      return;
+    }
+    if (!confirm(`تأكيد نقل رصيد ${money(value)} جنيه؟ سيتم مسح سجل الإضافات في هذه النسخة فقط.`)) return;
+    state = { balance: value, history: [] };
+    persist(); render();
+    alert('تم تحديث الرصيد في هذه النسخة.');
+  });
+  $('undo').addEventListener('click', () => {
+    if (!state.history.length) return;
+    const last = state.history.pop();
+    state.balance = last.previousBalance;
+    persist(); render();
+  });
+  render();
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(() => {}));
+  }
+})();
+</script>
+</body>
+</html>
